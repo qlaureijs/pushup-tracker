@@ -1,0 +1,25 @@
+{
+  "name": "2000 Pushups Monthly Tracker",
+  "short_name": "2000 Pushups",
+  "description": "Track exactly 2000 pushups per calendar month with tailored daily targets and weekly rest days. Free, open source, and offline-first.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0b0c16",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait",
+  "scope": ".",
+  "icons": [
+    {
+      "src": "app_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "app_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

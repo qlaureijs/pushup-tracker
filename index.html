@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="2000 Pushups">
+  <meta name="theme-color" content="#0b0c16">
+  
+  <title>2000 Pushups Monthly Tracker</title>
+
+  <!-- PWA Manifest & App Icon -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="app_icon.png">
+  <link rel="icon" type="image/png" href="app_icon.png">
+
+  <!-- Google Fonts: Outfit for titles/numbers, Inter for general UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Fullscreen Particle Canvas (Celebration Layer) -->
+  <canvas id="celebration-canvas"></canvas>
+
+  <!-- Application Container -->
+  <div id="app">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand">
+        <span class="logo-dot"></span>
+        <h1>PUSHUP <span class="accent-text">// 2000</span></h1>
+      </div>
+      <div id="connection-badge" class="connection-badge online">
+        <span class="badge-dot"></span>
+        <span class="badge-label">OFFLINE READY</span>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-content">
+
+      <!-- ================= DASHBOARD TAB ================= -->
+      <section id="tab-dashboard" class="tab-view active">
+        <!-- Daily Progress Ring -->
+        <div class="glass-card progress-card">
+          <div class="progress-ring-container">
+            <svg class="progress-ring" width="240" height="240">
+              <defs>
+                <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#8b5cf6" />
+                  <stop offset="100%" stop-color="#ec4899" />
+                </linearGradient>
+                <filter id="glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="8" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <!-- Background Circle -->
+              <circle class="progress-ring-bg" cx="120" cy="120" r="95" stroke-width="12" />
+              <!-- Foreground Progress Circle -->
+              <circle class="progress-ring-fill" cx="120" cy="120" r="95" stroke-width="12" stroke="url(#ring-gradient)" />
+            </svg>
+            <div class="progress-ring-text">
+              <span id="dash-percentage" class="percentage-val">0%</span>
+              <span id="dash-nums" class="nums-val">0 / 0</span>
+              <span class="label-val">PUSHUPS TODAY</span>
+            </div>
+          </div>
+          <div id="dash-streak-banner" class="streak-banner-micro">
+            <svg class="icon icon-fire" viewBox="0 0 24 24"><path d="M17.66 11.57c-.77-1.9-2.03-3.66-3.71-4.89-1.22-.89-2.61-1.57-3.9-2.42-.42-.27-.85-.56-1.12-1.01-.22-.38-.2-.85-.01-1.27.18-.4.55-.68.96-.83.42-.15.87-.1 1.25.1 2.22 1.15 4.3 2.92 5.56 5.16 1.34 2.39 1.48 5.37.38 7.82-.41.92-1.04 1.76-1.83 2.4-1.91 1.54-4.52 2.15-6.93 1.54-2.52-.64-4.66-2.5-5.38-5.01-.64-2.22-.16-4.67 1.25-6.49.37-.48.86-.9 1.45-1.05.51-.13 1.05.02 1.44.38.38.36.54.89.47 1.41-.09.72-.44 1.39-.77 2.03-.66 1.26-1.42 2.56-1.56 4 .01.78.26 1.53.71 2.16.82 1.13 2.31 1.63 3.63 1.19 1.29-.43 2.05-1.74 2.23-3.08.12-.89-.08-1.79-.47-2.6-.33-.69-.79-1.31-1.21-1.96-.34-.52-.66-1.07-.9-1.67-.18-.46-.28-.96-.24-1.46.01-.15.04-.3.09-.44.5.64.91 1.35 1.23 2.11.45.98.81 2.01 1.42 2.9.36.53.8.99 1.34 1.34.54.36 1.17.58 1.83.63.78.05 1.59-.16 2.21-.63.63-.48 1.02-1.21 1.07-2 .05-.8-.22-1.6-.62-2.28z" /></svg>
+            <span id="dash-streak-txt">0 DAY STREAK</span>
+          </div>
+        </div>
+
+        <!-- Workout Logger Card -->
+        <div class="glass-card logger-card">
+          <h2>LOG A SET</h2>
+          
+          <div class="slider-box">
+            <div class="slider-header">
+              <span class="min-val">5</span>
+              <span id="slider-current-val" class="current-val">20</span>
+              <span class="max-val">100</span>
+            </div>
+            <input type="range" id="pushup-slider" class="styled-slider" min="5" max="100" step="5" value="20">
+          </div>
+
+          <div class="quick-pills">
+            <button class="pill-btn" data-value="5">+5</button>
+            <button class="pill-btn" data-value="10">+10</button>
+            <button class="pill-btn" data-value="20">+20</button>
+            <button class="pill-btn" data-value="50">+50</button>
+          </div>
+
+          <button id="log-submit-btn" class="glowing-btn">
+            <span>RECORD PUSHUPS</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          </button>
+        </div>
+
+        <!-- Today's Activity Log -->
+        <div class="glass-card sets-card">
+          <div class="card-header-row">
+            <h2>TODAY'S LOGS</h2>
+            <span id="today-sets-count" class="badge-count">0 sets</span>
+          </div>
+          <div id="today-sets-list" class="sets-list-container">
+            <!-- Dynamic elements will be inserted here -->
+            <div class="empty-state">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>
+              <p>No sets logged today. Slide and tap record to start!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CALENDAR TAB ================= -->
+      <section id="tab-calendar" class="tab-view">
+        <div class="glass-card calendar-wrapper">
+          <div class="calendar-header">
+            <button id="prev-month-btn" class="icon-btn">
+              <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+            <h2 id="calendar-title">MAY 2026</h2>
+            <button id="next-month-btn" class="icon-btn">
+              <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+          </div>
+          
+          <div class="calendar-weekdays">
+            <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
+          </div>
+          
+          <div id="calendar-grid" class="calendar-grid">
+            <!-- Dynamic calendar tiles inserted here -->
+          </div>
+
+          <div class="calendar-legend">
+            <div class="legend-item"><span class="dot rest"></span><span>Rest</span></div>
+            <div class="legend-item"><span class="dot completed"></span><span>Done</span></div>
+            <div class="legend-item"><span class="dot pending"></span><span>Pending</span></div>
+            <div class="legend-item"><span class="dot missed"></span><span>Missed</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= STATS TAB ================= -->
+      <section id="tab-stats" class="tab-view">
+        <!-- Monthly Goal Summary Card -->
+        <div class="glass-card goal-summary-card">
+          <div class="card-header-row">
+            <h2>MONTHLY CHALLENGE</h2>
+            <span class="target-flag">GOAL: 2000</span>
+          </div>
+          <div class="stats-total-box">
+            <div class="total-big">
+              <span id="stats-total-done" class="glow-value">0</span>
+              <span class="total-divider">/</span>
+              <span class="total-goal">2000</span>
+            </div>
+            <span class="total-label">PUSHUPS COMPLETED</span>
+          </div>
+          
+          <div class="linear-progress-box">
+            <div class="progress-labels">
+              <span id="stats-completion-rate">0% Complete</span>
+              <span id="stats-pushups-left">2000 left</span>
+            </div>
+            <div class="progress-bar-track">
+              <div id="stats-progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="days-remaining-badge">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm3.3 14.3L11 12.8V7h1.5v4.9l3.7 2.2-.7 1.2z"/></svg>
+            <span id="stats-days-left">31 active days left in this month</span>
+          </div>
+        </div>
+
+        <!-- Grid of Stats Badges -->
+        <div class="stats-grid">
+          <div class="glass-card stat-tile">
+            <div class="tile-icon flame-tile">
+              <svg viewBox="0 0 24 24"><path d="M17.66 11.57c-.77-1.9-2.03-3.66-3.71-4.89-1.22-.89-2.61-1.57-3.9-2.42-.42-.27-.85-.56-1.12-1.01-.22-.38-.2-.85-.01-1.27.18-.4.55-.68.96-.83.42-.15.87-.1 1.25.1 2.22 1.15 4.3 2.92 5.56 5.16 1.34 2.39 1.48 5.37.38 7.82-.41.92-1.04 1.76-1.83 2.4-1.91 1.54-4.52 2.15-6.93 1.54-2.52-.64-4.66-2.5-5.38-5.01-.64-2.22-.16-4.67 1.25-6.49.37-.48.86-.9 1.45-1.05.51-.13 1.05.02 1.44.38.38.36.54.89.47 1.41-.09.72-.44 1.39-.77 2.03-.66 1.26-1.42 2.56-1.56 4 .01.78.26 1.53.71 2.16.82 1.13 2.31 1.63 3.63 1.19 1.29-.43 2.05-1.74 2.23-3.08.12-.89-.08-1.79-.47-2.6-.33-.69-.79-1.31-1.21-1.96-.34-.52-.66-1.07-.9-1.67-.18-.46-.28-.96-.24-1.46.01-.15.04-.3.09-.44.5.64.91 1.35 1.23 2.11.45.98.81 2.01 1.42 2.9.36.53.8.99 1.34 1.34.54.36 1.17.58 1.83.63.78.05 1.59-.16 2.21-.63.63-.48 1.02-1.21 1.07-2 .05-.8-.22-1.6-.62-2.28z" /></svg>
+            </div>
+            <div class="tile-content">
+              <span id="stat-current-streak" class="tile-val">0</span>
+              <span class="tile-label">Current Streak</span>
+            </div>
+          </div>
+          
+          <div class="glass-card stat-tile">
+            <div class="tile-icon star-tile">
+              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            </div>
+            <div class="tile-content">
+              <span id="stat-max-streak" class="tile-val">0</span>
+              <span class="tile-label">Best Streak</span>
+            </div>
+          </div>
+
+          <div class="glass-card stat-tile">
+            <div class="tile-icon avg-tile">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            </div>
+            <div class="tile-content">
+              <span id="stat-daily-average" class="tile-val">0</span>
+              <span class="tile-label">Avg/Active Day</span>
+            </div>
+          </div>
+
+          <div class="glass-card stat-tile">
+            <div class="tile-icon rest-tile">
+              <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg>
+            </div>
+            <div class="tile-content">
+              <span id="stat-rest-days" class="tile-val">0</span>
+              <span class="tile-label">Rest Days Spent</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom SVG Chart Card -->
+        <div class="glass-card chart-card">
+          <h2>ANALYTICS CHART</h2>
+          <div class="chart-container">
+            <!-- Custom responsive SVG rendered via JavaScript -->
+            <div id="svg-chart-wrapper" class="chart-wrapper"></div>
+          </div>
+          <div class="chart-legend">
+            <span class="chart-legend-item"><span class="line-dot target-color"></span>Target Curve</span>
+            <span class="chart-legend-item"><span class="line-dot actual-color"></span>Actual Completed</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SETTINGS TAB ================= -->
+      <section id="tab-settings" class="tab-view">
+        
+        <!-- App Settings -->
+        <div class="glass-card settings-card-box">
+          <h2>PREFERENCES</h2>
+          <div class="settings-control">
+            <div class="settings-desc">
+              <span class="control-label">Weekly Rest Day</span>
+              <span class="control-sublabel">Redistributes targets for future days of this month without losing your workout history.</span>
+            </div>
+            <div class="custom-select-wrapper">
+              <select id="setting-rest-day" class="custom-select">
+                <option value="0">Sunday</option>
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="glass-card settings-card-box">
+          <h2>DATA MANAGEMENT</h2>
+          
+          <div class="data-actions-grid">
+            <div class="data-card" id="btn-export-data">
+              <div class="data-icon export-icon">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+              </div>
+              <h3>Backup Data</h3>
+              <p>Export your workouts as a backup JSON file.</p>
+            </div>
+
+            <div class="data-card" id="btn-import-data">
+              <input type="file" id="import-file-input" style="display: none;" accept=".json">
+              <div class="data-icon import-icon">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v-4h-4v4H7l5 5 5-5h-3z"/></svg>
+              </div>
+              <h3>Restore Data</h3>
+              <p>Import and merge historical pushup records.</p>
+            </div>
+          </div>
+
+          <div class="alert-zone">
+            <div class="alert-content">
+              <h3>Danger Zone</h3>
+              <p>Wipe all records and reset the current monthly tracker. This action is permanent and cannot be undone.</p>
+            </div>
+            <button id="btn-reset-data" class="alert-btn">RESET ALL DATA</button>
+          </div>
+        </div>
+
+        <!-- About Information -->
+        <div class="glass-card about-card">
+          <div class="about-logo">
+            <div class="logo-shield">
+              <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 15l-4-4 1.41-1.41L10 13.17l7.59-7.59L19 7l-9 9z"/></svg>
+            </div>
+            <h3>Free & Open Source</h3>
+          </div>
+          <p>This application is free software, distributed under the MIT license. It respects your privacy: no registration, no tracking, and 100% of your data remains securely on your local device.</p>
+          <div class="version-stamp">VERSION 1.0.0 // OFFLINE PWA</div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Floating Bottom Navigation -->
+    <nav class="app-nav">
+      <!-- Active indicator slider bar -->
+      <div id="nav-indicator" class="nav-indicator"></div>
+
+      <button class="nav-item active" data-tab="dashboard">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span class="nav-label">Home</span>
+      </button>
+      
+      <button class="nav-item" data-tab="calendar">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+        <span class="nav-label">Calendar</span>
+      </button>
+      
+      <button class="nav-item" data-tab="stats">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4.81 17.03l2.88-2.88 3.13 3.13L16.2 11.9l2.99 2.99V7H13.8l2.99 2.99-4.88 4.88-3.13-3.13L4.81 15.6l1.42 1.43zM19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+        <span class="nav-label">Stats</span>
+      </button>
+      
+      <button class="nav-item" data-tab="settings">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span class="nav-label">Settings</span>
+      </button>
+    </nav>
+
+  </div> <!-- End App -->
+
+  <!-- ================= DAY MODAL (CALENDAR INTERACTION) ================= -->
+  <div id="day-modal" class="modal-overlay">
+    <div class="glass-card modal-container">
+      <header class="modal-header">
+        <div>
+          <h3 id="modal-date-title">May 15, 2026</h3>
+          <span id="modal-status-badge" class="badge-status">PENDING</span>
+        </div>
+        <button id="modal-close-btn" class="icon-btn close-btn">
+          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </header>
+      
+      <main class="modal-body">
+        <!-- Target Info -->
+        <div class="modal-target-row">
+          <div class="modal-target-item">
+            <span class="modal-item-label">Target Goal</span>
+            <span id="modal-target-val" class="modal-item-val">80</span>
+          </div>
+          <div class="modal-target-item">
+            <span class="modal-item-label">Completed</span>
+            <span id="modal-completed-val" class="modal-item-val accent">45</span>
+          </div>
+        </div>
+
+        <!-- Add Set in Modal -->
+        <div class="modal-add-set-box">
+          <h4>Add Set for this Day</h4>
+          <div class="modal-slider-box">
+            <div class="slider-header">
+              <span class="min-val">5</span>
+              <span id="modal-slider-current-val" class="current-val">20</span>
+              <span class="max-val">100</span>
+            </div>
+            <input type="range" id="modal-pushup-slider" class="styled-slider" min="5" max="100" step="5" value="20">
+          </div>
+          <button id="modal-log-btn" class="glowing-btn small-btn">LOG SET</button>
+        </div>
+
+        <!-- Dynamic Sets List inside Modal -->
+        <div class="modal-sets-list-box">
+          <h4>Logged Sets</h4>
+          <div id="modal-sets-list" class="sets-list-container small-list">
+            <!-- Render sets here -->
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Application Logic Modules -->
+  <script src="js/scheduler.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
