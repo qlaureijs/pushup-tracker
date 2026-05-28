@@ -11,15 +11,27 @@
   "icons": [
     {
       "src": "app_icon.png",
-      "sizes": "512x512",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "app_icon.png",
-      "sizes": "512x512",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
     }
+  ]
+  "id": "20260529Q01",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
+  ],
+  "lang": "en",
+  "iarc_rating_id": "PG",
+  "prefer_related_applications": false,
+  "categories": [
+    "fitness",
+    "lifestyle"
   ]
 }
